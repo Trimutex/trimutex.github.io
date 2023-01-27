@@ -7,6 +7,9 @@ const maxPaddleY = canvas.height - grid - paddleHeight;
 var paddleSpeed = 6;
 var ballSpeed = 5;
 
+var leftScore = 0;
+var rightScore = 0;
+
 const leftPaddle = {
   // start in the middle of the game on the left side
   x: grid * 2,
@@ -98,6 +101,13 @@ function loop() {
     if ( (ball.x < 0 || ball.x > canvas.width) && !ball.resetting) {
         ball.resetting = true;
 
+        if (ball.x < 0) {
+            rightScore++;
+        }
+        if (ball.x > canvas.width) {
+            leftScore++;
+        }
+
         // give some time for the player to recover before launching the ball again
         setTimeout(() => {
             ball.resetting = false;
@@ -121,6 +131,11 @@ function loop() {
         // in the next frame
         ball.x = rightPaddle.x - ball.width;
     }
+
+    // draw score
+    context.font = "30px Arial";
+    context.fillText(leftScore, 200, 50);
+    context.fillText(rightScore, 560, 50);
 
     // draw ball
     context.fillRect(ball.x, ball.y, ball.width, ball.height);
