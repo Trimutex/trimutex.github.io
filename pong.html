@@ -2,13 +2,19 @@
 <html>
     
 <head>
-    <title>Basic Pong HTML Game</title>
+    <title>Pong Game</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <canvas width="750" height="585" id="game"></canvas>
     <script src="scripts.js"></script>
+    <div id="gameover" hidden="true">
+        <h1>Game Over</h1>      
+    </div>
+    <div id="restart" hidden="true">
+        <button class="button" type="button" onclick = "restartGame()">Restart Game</a>
+    </div>
 </body>
 
 </html>

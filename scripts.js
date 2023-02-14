@@ -54,101 +54,121 @@ function collides(obj1, obj2) {
          obj1.y + obj1.height > obj2.y;
 }
 
+function gameOver() {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    let restartGame = document.getElementById("restart");
+    let gameOverText = document.getElementById("gameover");
+    restartGame.hidden = false;
+    gameOverText.hidden = false;
+}
+
+function restartGame() {
+    leftScore = 0;
+    rightScore = 0;
+    let restartGame = document.getElementById("restart");
+    restartGame.hidden = true;
+    requestAnimationFrame(loop);
+}
+
 // game loop
 function loop() {
-    requestAnimationFrame(loop);
-    context.clearRect(0,0,canvas.width,canvas.height);
-
-    // move paddles by their velocity
-    leftPaddle.y += leftPaddle.dy;
-    rightPaddle.y += rightPaddle.dy;
-
-    // prevent paddles from going through walls
-    if (leftPaddle.y < grid) {
-        leftPaddle.y = grid;
-    }
-    else if (leftPaddle.y > maxPaddleY) {
-        leftPaddle.y = maxPaddleY;
-    }
-
-    if (rightPaddle.y < grid) {
-        rightPaddle.y = grid;
-    }
-    else if (rightPaddle.y > maxPaddleY) {
-        rightPaddle.y = maxPaddleY;
-    }
-
-    // draw paddles
-    context.fillStyle = 'white';
-    context.fillRect(leftPaddle.x, leftPaddle.y, leftPaddle.width, leftPaddle.height);
-    context.fillRect(rightPaddle.x, rightPaddle.y, rightPaddle.width, rightPaddle.height);
-
-    // move ball by its velocity
-    ball.x += ball.dx;
-    ball.y += ball.dy;
-
-    // prevent ball from going through walls by changing its velocity
-    if (ball.y < grid) {
-        ball.y = grid;
-        ball.dy *= -1;
-    }
-    else if (ball.y + grid > canvas.height - grid) {
-        ball.y = canvas.height - grid * 2;
-        ball.dy *= -1;
-    }
-
-    // reset ball if it goes past paddle (but only if we haven't already done so)
-    if ( (ball.x < 0 || ball.x > canvas.width) && !ball.resetting) {
-        ball.resetting = true;
-
-        if (ball.x < 0) {
-            rightScore++;
+        if (leftScore < 7 && rightScore < 7) {
+            requestAnimationFrame(loop);
+        } else if (leftScore >= 7 || rightScore >= 7) {
+            gameOver();
         }
-        if (ball.x > canvas.width) {
-            leftScore++;
+        context.clearRect(0,0,canvas.width,canvas.height);
+
+         // move paddles by their velocity
+        leftPaddle.y += leftPaddle.dy;
+        rightPaddle.y += rightPaddle.dy;
+
+        // prevent paddles from going through walls
+        if (leftPaddle.y < grid) {
+            leftPaddle.y = grid;
+        }
+        else if (leftPaddle.y > maxPaddleY) {
+            leftPaddle.y = maxPaddleY;
         }
 
-        // give some time for the player to recover before launching the ball again
-        setTimeout(() => {
-            ball.resetting = false;
-            ball.x = canvas.width / 2;
-            ball.y = canvas.height / 2;
-        }, 400);
-    }
+        if (rightPaddle.y < grid) {
+            rightPaddle.y = grid;
+        }
+        else if (rightPaddle.y > maxPaddleY) {
+            rightPaddle.y = maxPaddleY;
+        }
 
-    // check to see if ball collides with paddle. if they do change x velocity
-    if (collides(ball, leftPaddle)) {
-        ball.dx *= -1;
+        // draw paddles
+        context.fillStyle = 'white';
+        context.fillRect(leftPaddle.x, leftPaddle.y, leftPaddle.width, leftPaddle.height);
+        context.fillRect(rightPaddle.x, rightPaddle.y, rightPaddle.width, rightPaddle.height);
 
-        // move ball next to the paddle otherwise the collision will happen again
-        // in the next frame
-        ball.x = leftPaddle.x + leftPaddle.width;
-    }
-    else if (collides(ball, rightPaddle)) {
-        ball.dx *= -1;
+        // move ball by its velocity
+        ball.x += ball.dx;
+        ball.y += ball.dy;
 
-        // move ball next to the paddle otherwise the collision will happen again
-        // in the next frame
-        ball.x = rightPaddle.x - ball.width;
-    }
+        // prevent ball from going through walls by changing its velocity
+        if (ball.y < grid) {
+            ball.y = grid;
+            ball.dy *= -1;
+        }
+        else if (ball.y + grid > canvas.height - grid) {
+            ball.y = canvas.height - grid * 2;
+            ball.dy *= -1;
+        }
 
-    // draw score
-    context.font = "30px Arial";
-    context.fillText(leftScore, 200, 50);
-    context.fillText(rightScore, 560, 50);
+        // reset ball if it goes past paddle (but only if we haven't already done so)
+        if ( (ball.x < 0 || ball.x > canvas.width) && !ball.resetting) {
+            ball.resetting = true;
 
-    // draw ball
-    context.fillRect(ball.x, ball.y, ball.width, ball.height);
+            if (ball.x < 0) {
+                rightScore++;
+            }
+            if (ball.x > canvas.width) {
+                leftScore++;
+            }
 
-    // draw walls
-    context.fillStyle = 'lightgrey';
-    context.fillRect(0, 0, canvas.width, grid);
-    context.fillRect(0, canvas.height - grid, canvas.width, canvas.height);
+            // give some time for the player to recover before launching the ball again
+            setTimeout(() => {
+                ball.resetting = false;
+                ball.x = canvas.width / 2;
+                ball.y = canvas.height / 2;
+            }, 400);
+        }
 
-    // draw dotted line down the middle
-    for (let i = grid; i < canvas.height - grid; i += grid * 2) {
-        context.fillRect(canvas.width / 2 - grid / 2, i, grid, grid);
-    }
+        // check to see if ball collides with paddle. if they do change x velocity
+        if (collides(ball, leftPaddle)) {
+            ball.dx *= -1;
+
+            // move ball next to the paddle otherwise the collision will happen again
+            // in the next frame
+            ball.x = leftPaddle.x + leftPaddle.width;
+        }
+        else if (collides(ball, rightPaddle)) {
+            ball.dx *= -1;
+
+            // move ball next to the paddle otherwise the collision will happen again
+            // in the next frame
+            ball.x = rightPaddle.x - ball.width;
+        }
+
+        // draw score
+        context.font = "30px Arial";
+        context.fillText(leftScore, 200, 50);
+        context.fillText(rightScore, 560, 50);
+
+        // draw ball
+        context.fillRect(ball.x, ball.y, ball.width, ball.height);
+
+        // draw walls
+        context.fillStyle = 'lightgrey';
+        context.fillRect(0, 0, canvas.width, grid);
+        context.fillRect(0, canvas.height - grid, canvas.width, canvas.height);
+
+        // draw dotted line down the middle
+        for (let i = grid; i < canvas.height - grid; i += grid * 2) {
+            context.fillRect(canvas.width / 2 - grid / 2, i, grid, grid);
+        }
 }
 
 // listen to keyboard events to move the paddles
