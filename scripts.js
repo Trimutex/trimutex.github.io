@@ -70,16 +70,31 @@ function restartGame() {
     requestAnimationFrame(loop);
 }
 
+function BotMovesPaddle(paddle) {
+  ballRegion = Math.floor(ball.y / 15);
+  paddleRegion = Math.floor(paddle.y / 15);
+  if (ballRegion < paddleRegion) paddle.dy = -paddleSpeed; 
+  if (ballRegion > paddleRegion) paddle.dy = paddleSpeed; 
+  if (ballRegion === paddleRegion) paddle.dy = 0; 
+}
+
 // game loop
 function loop() {
-        if (leftScore < 7 && rightScore < 7) {
+        //if (leftScore < 7 && rightScore < 7) {
             requestAnimationFrame(loop);
-        } else if (leftScore >= 7 || rightScore >= 7) {
-            gameOver();
-        }
+        //} else if (leftScore >= 7 || rightScore >= 7) {
+        //    gameOver();
+        //}
         context.clearRect(0,0,canvas.width,canvas.height);
 
-         // move paddles by their velocity
+        if (ball.dx < 0) {
+            BotMovesPaddle(leftPaddle);
+        }
+        if (ball.dx > 0) {
+           BotMovesPaddle(rightPaddle);
+        }
+
+        // move paddles by their velocity
         leftPaddle.y += leftPaddle.dy;
         rightPaddle.y += rightPaddle.dy;
 
@@ -139,6 +154,7 @@ function loop() {
         // check to see if ball collides with paddle. if they do change x velocity
         if (collides(ball, leftPaddle)) {
             ball.dx *= -1;
+            leftPaddle.dy = 0;
 
             // move ball next to the paddle otherwise the collision will happen again
             // in the next frame
@@ -146,6 +162,7 @@ function loop() {
         }
         else if (collides(ball, rightPaddle)) {
             ball.dx *= -1;
+            rightPaddle.dy = 0;
 
             // move ball next to the paddle otherwise the collision will happen again
             // in the next frame
